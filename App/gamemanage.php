@@ -1,6 +1,7 @@
 <?php
 class gamemanage{
     function index(){
+        $title='游戏管理';
         include 'App/views/gamemanage.html';
     }
     function  show(){
