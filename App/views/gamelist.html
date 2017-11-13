@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <title>游戏列表</title>
+    <script src="/ktv/Public/js/rem.js"></script>
+    <script src="/ktv/Public/js/jquery-3.2.1.js"></script>
+    <link rel="stylesheet" href="/ktv/Public/css/gamelist.css">
+</head>
+<body>
+    <header>
+        <a href="javascript:history.back();"></a>
+        <p>真心话</p>
+        <a class="change">换一批</a>
+    </header>
+    <ul class="main">
+        <?php for($i=0;$i<count($data);$i++){?>
+            <li><?php echo $data[$i]['gname']?></li>
+        <?php }?>
+    </ul>
+    <div class="rules">
+        <img src="/ktv/Public/img/at_02.png" alt="">
+    </div>
+    <footer>
+        <button class="active" id="1">真心话</button>
+        <button id="2">大冒险</button>
+        <div class="flag"></div>
+    </footer>
+</body>
+<script>
+    let main=$('.main');
+    let lis=$('.main>li');
+    let change=$('.change');
+    let type=location.search.slice(-1);
+    main.on('click','li',function () {
+        if ($('.main>li.active').length==2){
+            change.addClass('active')
+        }
+        $(this).css('transform','rotate3d(0,1,1,360deg)');
+    })
+    main.on('webkitTransitionEnd','li',function () {
+        $(this).addClass('active');
+    })
+    let pages=1;
+    $('header').on('click','.change.active',function () {
+        pages++;
+        $.ajax({
+            url:'/ktv/index.php/game/change',
+            dataType:'json',
+            data:{pages,type},
+            success:function (data) {
+                render(data);
+                change.removeClass('active');
+            }
+        })
+    })
+
+    //////////////////////
+    let buttons=$('button')
+    buttons.on('click',function () {
+        pages=1;
+        buttons.removeClass('active');
+        $(this).addClass('active');
+        type=$(this).prop('id');
+        $.ajax({
+            url:'/ktv/index.php/game/change',
+            data:{type,pages:1},
+            dataType:'json',
+            success:function (data) {
+                render(data);
+            }
+        })
+    })
+    /*页面刷新*/
+    //////////////////////
+    function render(data) {
+        main.empty();
+        change.addClass('active')
+        data.forEach(v=>{
+            $('<li>').html(v.gname).prependTo(main);
+        })
+    }
+//    $(buttons[0]).triggerHandler('click');
+
+</script>
+</html>
